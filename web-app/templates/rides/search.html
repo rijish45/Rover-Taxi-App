@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1><center style= "color: darkblue">Search</center></h1>
+{% if user.driverProfile.is_driver %}
+<form method="POST" action="{% url 'search_ride' %}">
+    {% csrf_token %}
+    <input type="hidden" name="search_as" value="driver">
+    <button type="submit" class="btn btn-primary col-md-2" style="margin-left: 60px;">Search as a Driver</button>
+</form>
+{% endif %}
+<br>
+<br>
+
+<form method="POST" action="{% url 'search_ride' %}" style="margin: 0px 20px 10px 50px">
+    {% csrf_token %}
+    <input type="hidden" name="search_as" value="sharer">
+    <div class="form-group col-md-4">
+        <label for="destination">Destination Address</label>
+        <input type="text" class="form-control" name="destination" id="destination" placeholder="Address" required>
+    </div>
+    <div class="form-group col-md-4">
+        <label for="number_of_passengers">Number of Passengers</label>
+        <input type="number" class="form-control" name="number_of_passengers" id="number_of_passengers" placeholder="Number of passengers"
+            required>
+    </div>
+    <div class="form-group col-md-4">
+        <label for="earliest_arrival_time">Earliest Arrival Time</label>
+        <input type="text" class="form-control" name="earliest_arrival_time" id="earliest_arrival_time" placeholder="format: Jan. 1, 2019, 12:30 p.m."
+            required>
+    </div>
+    <div class="form-group col-md-4">
+        <label for="latest_arrival_time">Latest Arrival Time</label>
+        <input type="text" class="form-control" name="latest_arrival_time" id="latest_arrival_time" placeholder="format: Jan. 1, 2019, 12:30 p.m."
+            required>
+    </div>
+    <div class="form-group col-md-4">
+        <label for="vehicle_type">Vehicle Type</label>
+        <input type="text" class="form-control" name="vehicle_type" id="vehicle_type" placeholder="Vehicle type">
+    </div>
+    <div class="form-group col-md-4">
+        <label for="special_request">Special Request</label>
+        <textarea type="text" class="form-control" name="special_request" id="special_request" placeholder="Special request"
+            rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-secondary" style="margin: 5px 0px 10px 15px">Search as a sharer</button>
+</form>
+{% endblock %}

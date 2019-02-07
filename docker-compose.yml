@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  db:
+      image: postgres
+      volumes:
+            - data-volume:/var/lib/postgresql/data
+  web-init:
+      build: ./web-app
+      command: /code/initserver.sh
+      volumes:
+        - ./web-app:/code
+      depends_on:
+        - db
+  web:
+      build: ./web-app
+      user: nobody
+      command: /code/runserver.sh
+      volumes:
+        - ./web-app:/code
+      expose:
+        - "8000"
+      depends_on:
+        - web-init
+  nginx:
+     image: nginx:latest
+     ports:
+       - "8000:8000"
+     volumes:
+       - ./nginx/config:/etc/nginx/conf.d
+     depends_on:
+       - web
+volumes:
+   data-volume: 

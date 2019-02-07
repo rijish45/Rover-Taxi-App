@@ -1,0 +1,11 @@
+
+Danger Log for HW1 - Web Application
+
+Rijish Ganguly
+Haohong Zhao
+
+1. We don't have any specific character constraints for user password.
+2. We don't do email verification to confirm the legitimacy of the registering user.
+3. Forms don't have error checking from the developer side, although we do have Django security support.
+4. We don't have password reset. Password might become stale and if account is compromised, the user won't be able to recover it.
+5. No protection for DoS and DDoS attack attempts.

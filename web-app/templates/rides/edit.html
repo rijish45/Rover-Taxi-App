@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1><center style = "color: darkblue;">Edit Ride </center></h1>
+<br>
+{% if ride %}
+<h5><center>Information Table I</center></h5>
+<table class="table" style ="margin: 0px 10px 0px 15px; border: 5px solid black; width: 95%;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Destination</th>
+            <th scope="col">Required Arrival Time</th>
+            <th scope="col">Passengers with Owner</th>
+            <th scope="col">Total passengers </th>
+            <th scope="col">Status</th>
+            <th scope="col">Can be shared</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">{{ ride.id }}</th>
+            <td>{{ ride.owner.username }}</td>
+            <td>{{ ride.destination }}</td>
+            <td>{{ ride.required_arrival_time }}</td>
+            <td>{{ ride.passenger_number_from_owner }}</td>
+            <td>{{ ride.passenger_number_in_total }}</td>
+            <td>{{ ride.ride_status }}</td>
+            <td>{{ ride.can_be_shared }}</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<h5><center>Information Table II</center></h5>
+<table class="table" style ="margin: 0px 10px 0px 15px; border: 5px solid black; width: 95%;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Requested Vehicle Type</th>
+            <th scope="col">Special Request</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ ride.requested_vehicle_type }}</td>
+            <td>{{ ride.special_request }}</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<h5><center>Information Table III</center></h5>
+<table class="table" style ="margin: 0px 10px 0px 15px; border: 5px solid black; width: 95%;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Driver</th>
+            <th scope="col">Vehicle Type</th>
+            <th scope="col">Passenger Capacity</th>
+            <th scope="col">License Number</th>
+            <th scope="col">Vehicle Info</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% if ride.driver %}
+            <td>{{ ride.driver.driverProfile.real_name }}</td>
+            <td>{{ ride.driver.driverProfile.vehicle_type }}</td>
+            <td>{{ ride.driver.driverProfile.maximum_passengers }}</td>
+            <td>{{ ride.driver.driverProfile.license_plate_number }}</td>
+            <td>{{ ride.driver.driverProfile.special_vehicle_info }}</td>
+            {% else %}
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            {% endif %}
+        </tr>
+    </tbody>
+</table>
+<br>
+<h5><center>Information Table IV</center></h5>
+<table class="table" style ="margin: 0px 10px 0px 15px; border: 5px solid black; width: 95%;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Sharer name</th>
+            <th scope="col">Passengers with sharer</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if ride.sharer_id_and_passenger_number_pair %}
+            {% for key, value in ride.sharer_id_and_passenger_number_pair.items %}
+                <tr>
+                    <td>{{ value.username }}</td>
+                    <td>{{ value.number_of_passengers }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+{% else %}
+<p>You don't have anything to display here</p>
+{% endif %}
+<br>
+
+{% if edit_as == 'owner' and ride.ride_status == 'open' %}
+<div style="margin: 30px 5px 10px 50px">
+<form method="POST" action="{% url 'edit_ride' ride.id %}">
+    {% csrf_token %}
+        <div class="form-group col-md-4">
+            <label for="destination">Destination address</label>
+            <input type="text" class="form-control" name="destination" id="destination" placeholder="Address" value="{{ ride.destination }}" required>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="arrival_time">Required arrival time</label>
+            <input type="text" class="form-control" name="arrival_time" id="arrival_time" placeholder="format: Jan. 1, 2019, 12:30 p.m." value="{{ ride.required_arrival_time }}" required>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="number_of_passengers">Number of passengers</label>
+            <input type="number" class="form-control" name="number_of_passengers" id="number_of_passengers" placeholder="Number of passengers" value="{{ ride.passenger_number_from_owner }}"
+                required>
+        </div>
+    <div class="form-group col-md-4">
+        <label for="vehicle_type">Vehicle type</label>
+        <input type="text" class="form-control" name="vehicle_type" id="vehicle_type" placeholder="Vehicle type" value="{{ ride.requested_vehicle_type }}">
+    </div>
+    <div class="form-group col-md-4">
+        <label for="special_request">Special request</label>
+        <textarea type="text" class="form-control" name="special_request" id="special_request" placeholder="Special request"
+            rows="3">{{ ride.special_request }}</textarea>
+    </div>
+    <div class="form-group col-md-4">
+            <label for="can_be_shared"></label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="can_be_shared" id="can_be_shared" {% if ride.can_be_shared %}checked{% endif %}>
+                <label class="form-check-label" for="can_be_shared">
+                    Want to share
+                </label>
+            </div>
+        </div>
+    <button type="submit" class="btn btn-secondary">Update the Ride</button>
+</form>
+</div>
+{% elif edit_as == 'driver' and ride.ride_status == 'confirm' %}
+        <a href="{% url 'complete_ride' ride.id %}" class="btn btn-success" role="button">Complete</a>
+{% elif edit_as == 'sharer' or edit_as == 'other' %}
+    {% if ride.ride_status == 'open' and user.driverProfile.is_driver %}
+        <a href="{% url 'confirm_ride' ride.id %}" class="btn btn-success" role="button">Confirm</a>
+    {% endif %}
+    {% if ride.ride_status == 'open' %}
+    <form method="POST" action="{% url 'share_ride' ride.id %}">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="number_of_passengers" style="margin-left: 20px; "> <bold>Number of Passengers</bold></label>
+                <input type="number" style="margin-left: 20px;" class="form-control" name="number_of_passengers" id="number_of_passengers" placeholder="Number of passengers"
+                {% if passenger_number_from_sharer %}
+                value="{{ passenger_number_from_sharer }}" 
+                {% endif %}
+                required
+                >
+            </div>
+        </div>
+        {% if edit_as == 'sharer '%}
+            <button type="submit" class="btn btn-secondary col-md-12">Update your Share Request</button>
+        {% else %}
+            <button type="submit" class="btn btn-secondary col-md-2" style="margin-left: 20px; margin-bottom: 30px;">Join the Ride</button>
+        {% endif %}
+    </form>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-top: 100px; margin-bottom: 20px">
+<center><a href="{% url 'create_ride' %}" class="btn btn-info" role="button">Request a Ride</a> </center>
+<br>
+<center><a href="{% url 'search_ride' %}" class="btn btn-success" role="button">Search</a></center>
+</div>
+<center><h2>Search Results</h2></center>
+<br>
+{% if search_as_driver %}
+    {% if rides %}
+    <table class="table" style ="margin: 0px 10px 0px 30px; border: 5px solid black; width: 95%;">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Required Arrival Time</th>
+                <th scope="col">Total Passengers</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides %}
+            <tr>
+                <th scope="row">{{ ride.id }}</th>
+                <td>{{ ride.destination }}</td>
+                <td>{{ ride.required_arrival_time }}</td>
+                <td>{{ ride.passenger_number_in_total }}</td>
+                <td>{{ ride.ride_status }}</td>
+                <td>
+                    <form method="POST" action="{% url 'confirm_ride' ride.id %}">
+                    {% csrf_token %}
+                    <input type="hidden"/>
+                    <input type="submit" class="btn btn-secondary" value="Confirm" />
+                    </form>
+                </td>
+                    <!-- <a href="{% url 'confirm_ride' ride.id %}" class="btn btn-secondary" role="button">confirm</a></td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="margin-left:100px;">Nothing to display.</p>
+    {% endif %}
+{% endif %}
+
+{% if search_as_sharer %}
+{% if rides %}
+<table class="table" style ="margin: 0px 10px 0px 30px; border: 5px solid black; width: 95%;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Destination</th>
+            <th scope="col">Required Arrival Time</th>
+            <th scope="col">Total Passengers</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ride in rides %}
+        <tr>
+            <th scope="row">{{ ride.id }}</th>
+            <td>{{ ride.destination }}</td>
+            <td>{{ ride.required_arrival_time }}</td>
+            <td>{{ ride.passenger_number_in_total }}</td>
+            <td>{{ ride.ride_status }}</td>
+            <td>
+                <a href="{% url 'edit_ride' ride.id %}" class="btn btn-secondary" role="button">share the ride</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="margin-left:100px;">Nothing to display.</p>
+{% endif %}
+{% endif %}
+
+{% endblock %}

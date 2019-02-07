@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.driverProfile.is_driver %}
+<section id="driver_update_info" class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>
+                            <i class="fas fa-user-plus"></i> Update Driver's Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Alerts -->
+                        {% include 'partials/_alerts.html'%}
+
+                        <form action="{% url 'driver_update_info' %}" method="POST">
+                            <!-- prevent cross-site forgery -->
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="real_name"><font color = "red">Full Name</font></label>
+                                <input type="text" name="real_name" class="form-control" value="{{ user.driverProfile.real_name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle_type"><font color = "red">Vehicle Type</font></label>
+                                <input type="text" name="vehicle_type" class="form-control" value="{{ user.driverProfile.vehicle_type }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="license_plate_number"><font color = "red">License Number</font></label>
+                                <input type="text" name="license_plate_number" class="form-control" value="{{ user.driverProfile.license_plate_number }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="maximum_passengers"><font color = "red">Passenger Capacity</font></label>
+                                <input type="number" name="maximum_passengers" class="form-control" value="{{ user.driverProfile.maximum_passengers }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="special_vehicle_info"><font color = "red">Special Vehicle Info</font></label>
+                                <textarea type="text" name="special_vehicle_info" class="form-control" rows="3">{{ user.driverProfile.special_vehicle_info }}</textarea>
+                            </div>
+                            <input type="submit" value="Update" class="btn btn-secondary btn-block">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% else %}
+<p>You're not a driver.</p>
+<a href="{% url 'dashboard' %}" class="btn btn-info" role="button">Return to dashboard</a>
+{% endif %}
+{% endblock %}

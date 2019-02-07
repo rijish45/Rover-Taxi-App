@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div>
+<a href="{% url 'create_ride' %}" class="btn btn-info" role="button" style="margin: 60px 25px 5px 625px;">Request a Ride </a>
+</div>
+<br>
+<div>
+<a href="{% url 'search_ride' %}" class="btn btn-primary" role="button" style="margin: 0px 25px 5px 620px;"> Search for Rides</a>
+</div>
+<br>
+<div style="margin: 0px 0px 30px 30px">
+<h2 style="text-align: left;">Rides as Owner</h2>
+{% if rides_as_owner %}
+    <table class="table" style ="margin: 0px 10px 0px 0px; border: 5px solid black; width: 95%">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Required Arrival Time</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for ride in rides_as_owner %}
+                    <tr>
+                        <th scope="row">{{ ride.id }}</th>
+                        <td>{{ ride.owner.username }}</td>
+                        <td>{{ ride.destination }}</td>
+                        <td>{{ ride.required_arrival_time }}</td>
+                        <td>
+                            {% if ride.driver %}
+                                {{ ride.driver.driverProfile.real_name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ ride.ride_status }}</td>
+                        <td>
+                            <a href="{% url 'ride' ride.id %}" class="btn btn-info" role="button">View</a>
+                            <a href="{% url 'edit_ride' ride.id %}" class="btn btn-secondary" role="button">Edit</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Nothing to display here</p>
+{% endif %}
+<br>
+<h2 style="text-align: left;">Rides as Sharer</h2>
+{% if rides_as_sharer %}
+    <table class="table" style ="margin: 0px 10px 0px 0px; border: 5px solid black; width: 95%;">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Required Arrival Time</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides_as_sharer %}
+            <tr>
+                <th scope="row">{{ ride.id }}</th>
+                <td>{{ ride.owner.username }}</td>
+                <td>{{ ride.destination }}</td>
+                <td>{{ ride.required_arrival_time }}</td>
+                <td>
+                    {% if ride.driver %}
+                    {{ ride.driver.driverProfile.real_name }}
+                    {% endif %}
+                </td>
+                <td>{{ ride.ride_status }}</td>
+                <td>
+                    <a href="{% url 'ride' ride.id %}" class="btn btn-info" role="button">View</a>
+                    <a href="{% url 'edit_ride' ride.id %}" class="btn btn-secondary" role="button">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Nothing to display here</p>
+{% endif %}
+<br>
+<h2 style="text-align: left;">Rides as Driver</h2>
+{% if rides_as_driver %}
+    <table class="table" style ="margin: 0px 10px 0px 0px; border: 5px solid black; width: 95%">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Required Arrival Time</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides_as_driver %}
+            <tr>
+                <th scope="row">{{ ride.id }}</th>
+                <td>{{ ride.owner.username }}</td>
+                <td>{{ ride.destination }}</td>
+                <td>{{ ride.required_arrival_time }}</td>
+                <td>
+                    {% if ride.driver %}
+                    {{ ride.driver.driverProfile.real_name }}
+                    {% endif %}
+                </td>
+                <td>{{ ride.ride_status }}</td>
+                {% if ride.ride_status == 'confirm' %}
+                    <td>
+                        <a href="{% url 'ride' ride.id %}" class="btn btn-info" role="button" style="width:60%;">View</a>
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'complete_ride' ride.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" />
+                            <input type="submit" style="width:60%;" class="btn btn-secondary" value="Complete"/>
+                        </form>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Nothing to display here</p>
+{% endif %}
+</div>
+
+{% endblock %}
